@@ -1,0 +1,11 @@
+# Gitignore file paths
+
+env/
+.venv/
+.conda/
+conda-meta/
+__pycache__/
+*.py[cod]
+*.ipynb_checkpoints/
+.vscode/
+.idea/
