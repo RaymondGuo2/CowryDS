@@ -1,0 +1,6 @@
+name: cowryenv
+channels:
+  - defaults
+dependencies:
+  - pandas
+prefix: /Users/raymondguo/opt/anaconda3/envs/cowryenv
