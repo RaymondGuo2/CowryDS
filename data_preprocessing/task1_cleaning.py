@@ -5,7 +5,7 @@ def load_data(file_path):
     # Load singular header for ease of processing
     df = pd.read_excel(file_path, "Data", skiprows=1)
     cols = list(df.columns)
-    df.rename(columns={cols[0]:"Batch Group", cols[1]:"Gender", cols[2]:"Age"}, inplace=True)
+    df.rename(columns={cols[0]:"Batch Group", cols[1]:"Gender", cols[2]:"Age", cols[13]:"Preparedness Levels"}, inplace=True)
 
     # Split the batch groups into their respective countries and industries to enable modelling of country-level and industry-level differences
     split_cols = df["Batch Group"].str.split(' ', n=1, expand=True)
