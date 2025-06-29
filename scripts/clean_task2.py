@@ -1,5 +1,17 @@
 # Package for cleaning data in Task 2
+import pandas as pd
+from datetime import datetime
+from dateutil.parser import parse
 
+
+# Function to deal with treatment dataset clean up
+def parse_date_safe(x):
+    if isinstance(x, datetime):
+        return x
+    try:
+        return parse(x, dayfirst=False)
+    except Exception:
+        return pd.NaT
 
 # Function to remove all values of February
 def exclude_february(df):
