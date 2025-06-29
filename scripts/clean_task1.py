@@ -29,5 +29,29 @@ def relabel_factors(df):
     df.rename(columns={"lcarpromd": "lcarprom"}, inplace=True)    
     return df
 
+# Combine the explicit and implicit factors together
+def create_combined_factors(df):
+    emotional_explicit_index = df.iloc[:, 17:32]
+    emotional_implicit_index = df.iloc[:, 43:58] 
+    workplace_explicit_index = df.iloc[:, 32:43]
+    workplace_implicit_index = df.iloc[:, 58:69]
+
+    if not (emotional_explicit_index.shape[1] == emotional_implicit_index.shape[1] and 
+            workplace_explicit_index.shape[1] == workplace_implicit_index.shape[1]):
+        raise ValueError("Explicit and implicit ranges must have the same number of columns.")
+
+    df_new = df.copy()
+
+    for c1, c2 in zip(emotional_explicit_index.columns, emotional_implicit_index.columns):
+        new_name = c1[1:]
+        df_new[new_name] = (emotional_explicit_index[c1] + emotional_implicit_index[c2]) / 2
+
+    # Combine workplace factors
+    for c1, c2 in zip(workplace_explicit_index.columns, workplace_implicit_index.columns):
+        new_name = c1[1:]
+        df_new[new_name] = (workplace_explicit_index[c1] + workplace_implicit_index[c2]) / 2
+
+    return df_new
+
 
 
