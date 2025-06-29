@@ -1,3 +1,5 @@
+# Package for cleaning data in Task 2
+
 
 # Function to remove all values of February
 def exclude_february(df):

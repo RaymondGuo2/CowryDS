@@ -1,4 +1,5 @@
-# Import packages
+# Package for NLP functions
+
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 import html
 import re
