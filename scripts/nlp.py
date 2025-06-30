@@ -9,6 +9,10 @@ from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet as wn
 import numpy as np
 import os
+from sklearn.decomposition import LatentDirichletAllocation
+# import pyLDAvis
+# import pyLDAvis.sklearn
+
 
 stopword_list = nltk.corpus.stopwords.words('english')
 wnl = WordNetLemmatizer()
@@ -99,9 +103,7 @@ def pos_tag_text(text):
             return None
         
     tokens = nltk.word_tokenize(text)
-    print(tokens)
     tagged_text = nltk.pos_tag(tokens, tagset='universal')
-    print(tagged_text)
     tagged_lower_text = [(word.lower(), penn_to_wn_tags(tag)) for word, tag in tagged_text]
     return tagged_lower_text
 
@@ -201,3 +203,15 @@ def print_topics_udf(topics, total_topics=1, weight_threshold=0.0001, display_we
             print(tw[:num_terms] if num_terms else tw)
     print
 
+def lda_topicmodel(corpus, num_topics):
+    vectoriser, tfidf_matrix = build_feature_matrix(corpus, feature_type='tfidf')
+    total_topics = num_topics
+    lda = LatentDirichletAllocation(n_components=total_topics, max_iter=100, learning_method='online', learning_offset=50., random_state=42)
+    lda.fit(tfidf_matrix)
+    feature_names = vectoriser.get_feature_names_out()
+    weights = lda.components_
+    topics = get_topics_terms_weights(weights, feature_names)
+    print_topics_udf(topics=topics, total_topics=total_topics, num_terms=8, display_weights=True)
+    return lda, tfidf_matrix
+    # lda_vis = pyLDAvis.sklearn.prepare(lda, tfidf_matrix, vectoriser)
+    # pyLDAvis.save_html(lda_vis, 'lda_visualization.html')
