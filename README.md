@@ -8,7 +8,7 @@ Two spreadsheets were provided, Task1 representing the data for `Predicting Care
 
 ### Output Scripts
 
-A number of packages were created to assist the completion of the Tasks, with `clean_task1.py`, `clean_task2.py`, `nlp.py`, `normalise.py`, `sentiment.py`. The scripts for running the Tasks can be found in `task1.ipynb` and `task2.py`.
+A number of packages were created to assist the completion of the Tasks, with `clean_task1.py`, `clean_task2.py`, `nlp.py`, `normalise.py`, `sentiment.py`. The scripts for running the Tasks can be found in `task1.ipynb` and `task2.ipynb`.
 
 ### Other Files
 
