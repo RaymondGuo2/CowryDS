@@ -10,6 +10,11 @@ from nltk.corpus import wordnet as wn
 import numpy as np
 import os
 from sklearn.decomposition import LatentDirichletAllocation
+from sentence_transformers import SentenceTransformer, util
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+import math
 # import pyLDAvis
 # import pyLDAvis.sklearn
 
@@ -212,6 +217,54 @@ def lda_topicmodel(corpus, num_topics):
     weights = lda.components_
     topics = get_topics_terms_weights(weights, feature_names)
     print_topics_udf(topics=topics, total_topics=total_topics, num_terms=8, display_weights=True)
-    return lda, tfidf_matrix
+    return lda, tfidf_matrix, feature_names
     # lda_vis = pyLDAvis.sklearn.prepare(lda, tfidf_matrix, vectoriser)
     # pyLDAvis.save_html(lda_vis, 'lda_visualization.html')
+
+def match_themes_from_corpus(corpus, model, themes, theme_embeddings):
+
+    comment_embeddings = model.encode(corpus, convert_to_tensor=True)
+    cos_scores = util.cos_sim(comment_embeddings, theme_embeddings)
+
+    results = []
+    for idx, row in enumerate(cos_scores):
+        best_match_idx = row.argmax().item()
+        best_score = row[best_match_idx].item()
+        matched_theme = themes[best_match_idx]
+
+        results.append({
+            "comment": corpus[idx],
+            "matched_theme": matched_theme,
+            "confidence": round(best_score, 3)
+        })
+
+    df_results = pd.DataFrame(results)
+    theme_percentages = df_results['matched_theme'].value_counts(normalize=True) * 100
+
+    return df_results, theme_percentages
+
+def plot_all_topics_grid(lda_model, feature_names, n_top_words=8, cols=2, figsize=(12, 10)):
+    weights = lda_model.components_
+    n_topics = weights.shape[0]
+    rows = math.ceil(n_topics / cols)
+
+    fig, axes = plt.subplots(rows, cols, figsize=figsize, constrained_layout=True)
+    axes = axes.flatten()
+
+    for topic_idx, topic_weights in enumerate(weights):
+        top_indices = topic_weights.argsort()[::-1][:n_top_words]
+        top_terms = [feature_names[i] for i in top_indices]
+        top_weights = [topic_weights[i] for i in top_indices]
+
+        ax = axes[topic_idx]
+        sns.barplot(x=top_weights, y=top_terms, ax=ax, palette='viridis')
+        ax.set_title(f"Topic {topic_idx}")
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+    
+    # Remove any unused subplots
+    for i in range(n_topics, len(axes)):
+        fig.delaxes(axes[i])
+
+    fig.suptitle("Top Words per Topic", fontsize=16)
+    plt.show()
