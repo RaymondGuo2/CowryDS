@@ -243,28 +243,18 @@ def match_themes_from_corpus(corpus, model, themes, theme_embeddings):
 
     return df_results, theme_percentages
 
-def plot_all_topics_grid(lda_model, feature_names, n_top_words=8, cols=2, figsize=(12, 10)):
+def plot_top_words_per_topic(lda_model, feature_names, n_top_words=8):
     weights = lda_model.components_
-    n_topics = weights.shape[0]
-    rows = math.ceil(n_topics / cols)
-
-    fig, axes = plt.subplots(rows, cols, figsize=figsize, constrained_layout=True)
-    axes = axes.flatten()
+    num_topics = weights.shape[0]
 
     for topic_idx, topic_weights in enumerate(weights):
         top_indices = topic_weights.argsort()[::-1][:n_top_words]
         top_terms = [feature_names[i] for i in top_indices]
         top_weights = [topic_weights[i] for i in top_indices]
 
-        ax = axes[topic_idx]
-        sns.barplot(x=top_weights, y=top_terms, ax=ax, palette='viridis')
-        ax.set_title(f"Topic {topic_idx}")
-        ax.set_xlabel("")
-        ax.set_ylabel("")
-    
-    # Remove any unused subplots
-    for i in range(n_topics, len(axes)):
-        fig.delaxes(axes[i])
-
-    fig.suptitle("Top Words per Topic", fontsize=16)
-    plt.show()
+        plt.figure(figsize=(8, 4))
+        sns.barplot(x=top_weights, y=top_terms, palette="viridis")
+        plt.title(f"Topic {topic_idx}")
+        plt.xlabel("Word Weight")
+        plt.tight_layout()
+        plt.show()

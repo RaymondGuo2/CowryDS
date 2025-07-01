@@ -2,6 +2,7 @@
 import pandas as pd
 from datetime import datetime
 from dateutil.parser import parse
+import numpy as np
 
 
 # Function to deal with treatment dataset clean up
@@ -28,4 +29,9 @@ def data_segmentation(df):
     df_nv_treatment = df[(df['VOLT_FLAG'] != 'yes') & (df['COLUMN_4'] == 'pilot')]
     return df_v, df_nv, df_v_control, df_nv_control, df_v_treatment, df_nv_treatment
 
-
+def clean_text_columns(df, text_columns = ['LTR_COMMENT']):
+    missing_strings = {'nan', 'NaN', 'NA', 'na', 'N/A', 'n/a', 'null', 'Null', 'NULL', ''}
+    for col in text_columns:
+        df[col] = df[col].replace(missing_strings, np.nan)
+        df.dropna(subset=[col], inplace=True)
+    return df
